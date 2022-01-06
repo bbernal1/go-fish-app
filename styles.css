@@ -1,3 +1,24 @@
 .container {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    justify-content: space-between;
+}
+
+div {
+    border-style: solid;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    width: 33.125%;
+}
+
+#deck {
+    display:block;
+    margin: auto;
 }
