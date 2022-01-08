@@ -4,6 +4,8 @@ const instructions = document.getElementById("instructions");
 const p1Hand = document.getElementById("p1-hand");
 const p2Hand = document.getElementById("p2-hand");
 const continueBtn = document.getElementById("continueBtn");
+const p1CardCntP = document.getElementById("p1-card-cnt");
+const p2CardCntP = document.getElementById("p2-card-cnt");
 let deckId;
 let cardsRemainingVal = 52;
 
@@ -27,8 +29,9 @@ function updateInstructions(str) {
 function updateCardsRemaining() {
     cardsRemaining.textContent = `Cards Remaining = ${cardsRemainingVal}`;
 }
-dict = {};
-
+let dict = {};
+let p1CardCnt = {};
+let p2CardCnt = {};
 //phase 1: The deck is clicked and cards are dealt
 function dealCards() {
     fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=14`).then((response) => response.json())
@@ -42,9 +45,11 @@ function dealCards() {
                 dict[card.image] = card.value;
                 if (i % 2 == 0) {
                     img.style = "margin-right:30px; margin-bottom:30px;"
+                    p1CardCnt[card.value] = 1;
                     p1Hand.appendChild(img);
                 } else {
                     img.style = " margin-left:30px;margin-bottom:30px;"
+                    p2CardCnt[card.value] = 1;
                     p2Hand.appendChild(img);
                 }
                 i++;
@@ -56,10 +61,28 @@ function dealCards() {
             deck.style = "box-shadow:none;cursor:default";
             deck.removeEventListener("click", dealCards)
             updateP1(true);
+            updateP1CardCnt();
+            updateP2CardCnt()
         });
-    //change instruction to next instruction
-    ;
 
+}
+
+function updateP2CardCnt() {
+    let keys = Object.keys(p2CardCnt);
+    let str = "Player 2 Card Count: ";
+    keys.forEach((key) => {
+        str += key + " : " + p2CardCnt[key] + ", ";
+    })
+    p2CardCntP.textContent = str;
+}
+
+function updateP1CardCnt() {
+    let keys = Object.keys(p1CardCnt);
+    let str = "Player 1 Card Count: ";
+    keys.forEach((key) => {
+        str += key + " : " + p1CardCnt[key] + ", ";
+    })
+    p1CardCntP.textContent = str;
 }
 
 function updateP1(turnOn) {
@@ -80,12 +103,12 @@ function updateP1(turnOn) {
 
 }
 
-//phase 2a: player 1 chooses a card to ask for
+//phase 2a: player 1 chooses a card to ask for and hits continue
 function askForCard() {
     updateP1(false);
     updateInstructions(`You requested any ${dict[this.currentSrc]} values from player 2`);
     continueBtn.style = "display:inline;"
 }
 
-//phase 2b: user hits continue
+//phase 2b: player 1 ww
 init();
