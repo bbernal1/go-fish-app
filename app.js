@@ -1,49 +1,61 @@
 const deck = document.getElementById("deck");
-const cardsRemaining = document.getElementById("cards-remaining");
 const instructions = document.getElementById("instructions");
+const cardsRemaining = document.getElementById("cards-remaining");
 const p1Hand = document.getElementById("p1-hand");
 const p2Hand = document.getElementById("p2-hand");
 const continueBtn = document.getElementById("continue-btn");
 const p1CardCntP = document.getElementById("p1-card-cnt");
 const p2CardCntP = document.getElementById("p2-card-cnt");
 const placeHolder = document.getElementById("place-holder");
-let deckId;
+const p1Score = document.getElementById("p1-score");
+const p2Scoare = document.getElementById("p2-score");
+//this function updates document.getElementById("instructions");
+function updateInstructions(str) {
+    instructions.textContent = str;
+}
+
 let cardsRemainingVal = 52;
 
+//this function updates document.getElementById("cards-remaining");
+function updateCardsRemaining() {
+    cardsRemaining.textContent = `Cards Remaining = ${cardsRemainingVal}`;
+}
+
+let deckId;
+
+//this function executes when webpage is loaded
 function init() {
     fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1").then((response) => response.json()).then((response) => {
         deckId = response.deck_id;
         //console.log(deckId);
     });
-    updateCardsRemaining();
-    continueBtn.style = "display:none";
+
     instructions.textContent = "Click the deck above to deal cards";
+    updateCardsRemaining();
     deck.addEventListener("click", dealCards);
-    deck.style = "cursor:pointer;"
-
 }
 
-function updateInstructions(str) {
-    instructions.textContent = str;
-}
+//Object is used to map a card's image to the value. 
+//Used when iterating through card image elements and comparing their values to other values
+const imgImageToValueMap = {};
+//Both objects are used to count the number of cards of each rank that each player has
+const p1CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
+const p2CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
 
-function updateCardsRemaining() {
-    cardsRemaining.textContent = `Cards Remaining = ${cardsRemainingVal}`;
-}
-let dict = {};
-let p1CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
-let p2CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
-//phase 1: The deck is clicked and cards are dealt
+// this function triggers when clicking document.getElementById("deck");
 function dealCards() {
     fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=14`).then((response) => response.json())
         .then((responseObject) => {
+            //helper variable for dealing cards to each player in an alternating fashion
             let i = 0;
             responseObject.cards.forEach((card) => {
-                //console.log(card);
+                //creates image element from card
                 let img = document.createElement('img');
-                //map img src to card value
                 img.setAttribute('src', card.image);
-                dict[card.image] = card.value;
+
+                //maps the cardimage to the card value
+                imgImageToValueMap[card.image] = card.value;
+                //The if-else statement is used to deal a card to each player in an alternating fashion
                 if (i % 2 == 0) {
                     img.style = "margin-right:30px; margin-bottom:30px;"
                     p1CardCnt[card.value] = p1CardCnt[card.value] + 1;
@@ -57,16 +69,32 @@ function dealCards() {
             })
             cardsRemainingVal -= 14;
             updateCardsRemaining();
+            updateP1CardCnt();
+            updateP2CardCnt();
+
             instructions.textContent = "Choose a card rank to ask for";
-            //remove styling and click function  for deck
             deck.style = "box-shadow:none;cursor:default";
             deck.removeEventListener("click", dealCards)
             updateP1(true);
-            updateP1CardCnt();
-            updateP2CardCnt()
+            
         });
 }
 
+let p1ScoreVal = 0;
+function updateP1CardCnt() {
+    let keys = Object.keys(p1CardCnt);
+    let str = "Player 1 Card Count: ";
+    keys.forEach((key) => {
+
+        if (p1CardCnt[key] == 4) {
+
+        }
+        str += key + " : " + p1CardCnt[key] + ", ";
+    })
+    p1CardCntP.textContent = str;
+}
+
+let p2ScoreVal = 0;
 function updateP2CardCnt() {
     let keys = Object.keys(p2CardCnt);
     let str = "Player 2 Card Count: ";
@@ -76,14 +104,6 @@ function updateP2CardCnt() {
     p2CardCntP.textContent = str;
 }
 
-function updateP1CardCnt() {
-    let keys = Object.keys(p1CardCnt);
-    let str = "Player 1 Card Count: ";
-    keys.forEach((key) => {
-        str += key + " : " + p1CardCnt[key] + ", ";
-    })
-    p1CardCntP.textContent = str;
-}
 
 function updateP1(turnOn) {
     let nodes = p1Hand.childNodes;
@@ -110,7 +130,7 @@ function askForCard() {
     placeHolder.style.backgroundImage = `url(${this.currentSrc})`
     continueBtn.style.display = "block";
     continueBtn.style.boxShadow = "0px 0px 10px 10px blue"
-    continueBtn.rank = dict[this.currentSrc];
+    continueBtn.rank = imgImageToValueMap[this.currentSrc];
     continueBtn.addEventListener("click", checkP2Cards)
 }
 
@@ -123,7 +143,7 @@ function checkP2Cards(event) {
     let cardsFound = 0;
     continueBtn.imgSrcs = [];
     nodes.forEach((card) => {
-        if (dict[card.currentSrc] === rank) {
+        if (imgImageToValueMap[card.currentSrc] === rank) {
             found = true;
             card.style.boxShadow = "0px 0px 10px 10px red";
             cardsFound++;
@@ -145,9 +165,7 @@ function checkP2Cards(event) {
     }
 }
 
-function checkForBooks() {
 
-}
 
 function p1GoFish() {
     continueBtn.removeEventListener("click", p1GoFish);
@@ -155,7 +173,7 @@ function p1GoFish() {
         cardsRemainingVal -= 1;
         updateCardsRemaining();
         let card = responseObject.cards[0];
-        dict[card.image] = card.value;
+        imgImageToValueMap[card.image] = card.value;
         //map img src to card value
         updateInstructions(`You drew the card below`)
         placeHolder.style.backgroundImage = `url(${card.image})`;
@@ -181,7 +199,7 @@ function player2Turn() {
     //choose card
     let nodes = p2Hand.childNodes;
     let randomIdx = Math.floor(Math.random() * nodes.length);
-    let rank = dict[nodes[randomIdx].currentSrc];
+    let rank = imgImageToValueMap[nodes[randomIdx].currentSrc];
     updateInstructions(`Player 2 asks for the following card rank: ${rank}`);
     let cardsFound = 0;
     continueBtn.rank = rank;
@@ -195,7 +213,7 @@ function checkP1Cards(event) {
     let cardsFound = 0;
     continueBtn.imgSrcs = [];
     nodes.forEach((card) => {
-        if (dict[card.currentSrc] === rank) {
+        if (imgImageToValueMap[card.currentSrc] === rank) {
             found = true;
             card.style.boxShadow = "0px 0px 10px 10px red";
             cardsFound++;
@@ -223,7 +241,7 @@ function p2GoFish() {
         cardsRemainingVal -= 1;
         updateCardsRemaining();
         let card = responseObject.cards[0];
-        dict[card.image] = card.value;
+        imgImageToValueMap[card.image] = card.value;
         updateInstructions(`Player 2 drew the card below`)
         placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
