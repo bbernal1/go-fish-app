@@ -46,11 +46,11 @@ function dealCards() {
                 dict[card.image] = card.value;
                 if (i % 2 == 0) {
                     img.style = "margin-right:30px; margin-bottom:30px;"
-                    p1CardCnt[card.value] = 1;
+                    p1CardCnt[card.value] = p1CardCnt[card.value] + 1;
                     p1Hand.appendChild(img);
                 } else {
                     img.style = " margin-left:30px;margin-bottom:30px;"
-                    p2CardCnt[card.value] = 1;
+                    p2CardCnt[card.value] = p2CardCnt[card.value] + 1;
                     p2Hand.appendChild(img);
                 }
                 i++;
@@ -131,14 +131,14 @@ function checkP2Cards(event) {
         }
     });
     p1CardCnt[rank] = p1CardCnt[rank] + cardsFound;
-    p2CardCnt[rank] = p2CardCnt[rank] - 1;
+    p2CardCnt[rank] = p2CardCnt[rank] - cardsFound;
 
     //if found is true press continue button
     continueBtn.removeEventListener("click", checkP2Cards);
-
+    continueBtn.mode = true;
     if (found == true) {
         updateInstructions(`Player 1 has received ${cardsFound} card(s)`);
-        continueBtn.addEventListener("click", chooseCard);
+        continueBtn.addEventListener("click", chooseCardP1);
     } else {
         updateInstructions(`Player 2 has no cards of that rank. Go Fish!`);
         continueBtn.addEventListener("click", p1GoFish);
@@ -171,29 +171,120 @@ function p1GoFish() {
             p1CardCnt[card.value]++;
             updateP1CardCnt();
             updateInstructions(`It is now player 2's turn`);
-                //player 2 turn
-
+            continueBtn.addEventListener("click", player2Turn);
         });
     });
 }
 
-function player2turn() {
-    
+function player2Turn() {
+    continueBtn.removeEventListener("click", player2Turn);
+    //choose card
+    let nodes = p2Hand.childNodes;
+    let randomIdx = Math.floor(Math.random() * nodes.length);
+    let rank = dict[nodes[randomIdx].currentSrc];
+    updateInstructions(`Player 2 asks for the following card rank: ${rank}`);
+    let cardsFound = 0;
+    continueBtn.rank = rank;
+    continueBtn.addEventListener("click", checkP1Cards)
 }
 
-function chooseCard(event) {
-    continueBtn.removeEventListener("click", chooseCard);
+function checkP1Cards(event) {
+    let rank = event.currentTarget.rank;
+    found = false;
+    let nodes = p1Hand.childNodes;
+    let cardsFound = 0;
+    continueBtn.imgSrcs = [];
+    nodes.forEach((card) => {
+        if (dict[card.currentSrc] === rank) {
+            found = true;
+            card.style.boxShadow = "0px 0px 10px 10px red";
+            cardsFound++;
+            continueBtn.imgSrcs.push(card.currentSrc);
+        }
+    });
+    p2CardCnt[rank] = p2CardCnt[rank] + cardsFound;
+    p1CardCnt[rank] = p1CardCnt[rank] - cardsFound;
+
+    //if found is true press continue button
+    continueBtn.removeEventListener("click", checkP1Cards);
+
+    if (found == true) {
+        updateInstructions(`Player 2 has received ${cardsFound} card(s)`);
+        continueBtn.addEventListener("click", updateCardsP2);
+    } else {
+        updateInstructions(`Player 1 has no cards of that rank. Go Fish!`);
+        continueBtn.addEventListener("click", p2GoFish);
+    }
+}
+
+function p2GoFish() {
+    continueBtn.removeEventListener("click", p2GoFish);
+    fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`).then(response => response.json()).then((responseObject) => {
+        cardsRemainingVal -= 1;
+        updateCardsRemaining();
+        let card = responseObject.cards[0];
+        dict[card.image] = card.value;
+        updateInstructions(`Player 2 drew the card below`)
+        placeHolder.style.backgroundImage = `url(${card.image})`;
+        let tempfunc;
+        continueBtn.addEventListener("click", tempfunc = () => {
+            continueBtn.removeEventListener("click", tempfunc);
+            placeHolder.style.backgroundImage = `none`;
+            let img = document.createElement('img');
+            img.setAttribute('src', card.image);
+            img.style.marginBottom = "30px";
+            img.style.marginLeft = "30px";
+            p2Hand.appendChild(img);
+            p2CardCnt[card.value]++;
+            updateP2CardCnt();
+            updateInstructions(`It is now player 1's turn`);
+            continueBtn.mode = false;
+            continueBtn.addEventListener("click", chooseCardP1);
+        });
+    });
+}
+
+function chooseCardP1(event) {
+    continueBtn.removeEventListener("click", chooseCardP1);
     instructions.textContent = "Choose a card rank to ask for";
     continueBtn.style.boxShadow = "none";
     placeHolder.style.backgroundImage = `none`;
     continueBtn.style.display = "none";
-    updateP1CardCnt();
-    updateP2CardCnt();
-    addP1(event)
-    removeP2(event);
-    checkForBooks(); //IMPORTANT
+    let mode = event.currentTarget.mode;
+    if (mode == true) {
+        updateP1CardCnt();
+        updateP2CardCnt();
+        addP1(event)
+        removeP2(event);
+        checkForBooks(); //IMPORTANT
+    }
     updateP1(true);
 }
+
+function updateCardsP2(event) {
+    let imgSrcs = event.currentTarget.imgSrcs;
+    imgSrcs.forEach((imgSrc) => {
+        let img = document.createElement('img');
+        img.setAttribute('src', imgSrc);
+        img.style.marginBottom = "30px";
+        p2Hand.appendChild(img);
+    });
+
+    let nodes = p1Hand.childNodes;
+    let nodesCpy = [];
+    nodes.forEach((node) => nodesCpy.push(node));
+    nodesCpy.forEach((card) => {
+        if (imgSrcs.includes(card.currentSrc)) {
+            p1Hand.removeChild(card);
+        }
+    })
+    continueBtn.removeEventListener("click", updateCardsP2);
+    updateP1CardCnt();
+    updateP2CardCnt();
+    player2Turn();
+}
+
+
 
 function addP1(event) {
     let imgSrcs = event.currentTarget.imgSrcs;
@@ -203,7 +294,6 @@ function addP1(event) {
         img.style.marginBottom = "30px";
         p1Hand.appendChild(img);
     })
-
 }
 
 function removeP2(event) {
@@ -216,6 +306,6 @@ function removeP2(event) {
             p2Hand.removeChild(card);
         }
     })
-    event.currentTarget.imgSrcs = [];
+
 }
 init();
