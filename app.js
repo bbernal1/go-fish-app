@@ -1,5 +1,6 @@
 const deck = document.getElementById("deck");
 const instructions = document.getElementById("instructions");
+const instructions2 = document.getElementById("instructions-2");
 const cardsRemaining = document.getElementById("cards-remaining");
 const p1Hand = document.getElementById("p1-hand");
 const p2Hand = document.getElementById("p2-hand");
@@ -8,7 +9,7 @@ const p1CardCntP = document.getElementById("p1-card-cnt");
 const p2CardCntP = document.getElementById("p2-card-cnt");
 const placeHolder = document.getElementById("place-holder");
 const p1Score = document.getElementById("p1-score");
-const p2Scoare = document.getElementById("p2-score");
+const p2Score = document.getElementById("p2-score");
 //this function updates document.getElementById("instructions");
 function updateInstructions(str) {
     instructions.textContent = str;
@@ -37,13 +38,15 @@ function init() {
 
 //Object is used to map a card's image to the value. 
 //Used when iterating through card image elements and comparing their values to other values
-const imgImageToValueMap = {};
+const cardImageToRankMap = {};
 //Both objects are used to count the number of cards of each rank that each player has
 const p1CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
 const p2CardCnt = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "JACK": 0, "QUEEN": 0, "KING": 0, "ACE": 0 };
 
 // this function triggers when clicking document.getElementById("deck");
 function dealCards() {
+    deck.style = "box-shadow:none;cursor:default";
+    deck.removeEventListener("click", dealCards)
     fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=14`).then((response) => response.json())
         .then((responseObject) => {
             //helper variable for dealing cards to each player in an alternating fashion
@@ -54,7 +57,8 @@ function dealCards() {
                 img.setAttribute('src', card.image);
 
                 //maps the cardimage to the card value
-                imgImageToValueMap[card.image] = card.value;
+                cardImageToRankMap[card.image] = card.value;
+
                 //The if-else statement is used to deal a card to each player in an alternating fashion
                 if (i % 2 == 0) {
                     img.style = "margin-right:30px; margin-bottom:30px;"
@@ -70,42 +74,89 @@ function dealCards() {
             cardsRemainingVal -= 14;
             updateCardsRemaining();
             updateP1CardCnt();
+            //console.log("here");
             updateP2CardCnt();
-
-            instructions.textContent = "Choose a card rank to ask for";
-            deck.style = "box-shadow:none;cursor:default";
-            deck.removeEventListener("click", dealCards)
-            updateP1(true);
-            
+            //highlightP1Cards(true);
         });
 }
 
+
+
 let p1ScoreVal = 0;
+
 function updateP1CardCnt() {
     let keys = Object.keys(p1CardCnt);
     let str = "Player 1 Card Count: ";
+    //list of player 1's book ranks
+    let bookRanks = [];
     keys.forEach((key) => {
-
-        if (p1CardCnt[key] == 4) {
-
+        if (p1CardCnt[key] == 2) {
+            //console.log(typeof(key));
+            bookRanks.push(key);
         }
         str += key + " : " + p1CardCnt[key] + ", ";
     })
     p1CardCntP.textContent = str;
+    if (bookRanks.length != 0) {
+        showBooksP1(bookRanks);
+    }
+}
+
+function showBooksP1(bookRanks) {
+    let nodes = p1Hand.childNodes;
+    let nodesCpy = [];
+    nodes.forEach((card) => nodesCpy.push(card));
+    // console.log(bookRanks);
+    nodesCpy.forEach((card) => {
+        let rank = cardImageToRankMap[card.getAttribute("src")];
+        if (bookRanks.includes(rank)) {
+            // console.log(`${rank} removed`);
+            p1Hand.removeChild(card);
+        }
+    });
+    updateInstructions(`Player 1 has scored ${bookRanks.length} books`);
+    p1ScoreVal += bookRanks.length;
+    p1Score.textContent = `Score: ${p1ScoreVal}`;
 }
 
 let p2ScoreVal = 0;
+
 function updateP2CardCnt() {
+    // console.log("here")
     let keys = Object.keys(p2CardCnt);
     let str = "Player 2 Card Count: ";
+    let bookRanks = [];
     keys.forEach((key) => {
+        if (p2CardCnt[key] == 2) {
+            bookRanks.push(key);
+        }
         str += key + " : " + p2CardCnt[key] + ", ";
     })
     p2CardCntP.textContent = str;
+    console.log(bookRanks);
+    if (bookRanks.length != 0) {
+        showBooksP2(bookRanks);
+    }
 }
 
+function showBooksP2(bookRanks) {
+    let nodes = p2Hand.childNodes;
+    let nodesCpy = [];
+    nodes.forEach((card) => nodesCpy.push(card));
+    nodesCpy.forEach((card) => {
+        let rank = cardImageToRankMap[card.getAttribute("src")];
+        if (bookRanks.includes(rank)) {
+            console.log("here");
+            p2Hand.removeChild(card);
+        }
+    });
+    instructions2.textContent = `Player 2 has scored ${bookRanks.length} books`;
+    p2ScoreVal += bookRanks.length;
+    p2Score.textContent = `Score: ${p2ScoreVal}`;
+}
 
-function updateP1(turnOn) {
+function highlightP1Cards(turnOn) {
+    instructions.textContent = "Choose a card rank to ask for";
     let nodes = p1Hand.childNodes;
     if (turnOn === true) {
         nodes.forEach((card) => {
@@ -125,12 +176,12 @@ function updateP1(turnOn) {
 
 //phase 2a: player 1 chooses a card to ask for and hits continue
 function askForCard() {
-    updateP1(false);
+    highlightP1Cards(false);
     updateInstructions(`You requested the card below`);
     placeHolder.style.backgroundImage = `url(${this.currentSrc})`
     continueBtn.style.display = "block";
     continueBtn.style.boxShadow = "0px 0px 10px 10px blue"
-    continueBtn.rank = imgImageToValueMap[this.currentSrc];
+    continueBtn.rank = cardImageToRankMap[this.currentSrc];
     continueBtn.addEventListener("click", checkP2Cards)
 }
 
@@ -143,7 +194,7 @@ function checkP2Cards(event) {
     let cardsFound = 0;
     continueBtn.imgSrcs = [];
     nodes.forEach((card) => {
-        if (imgImageToValueMap[card.currentSrc] === rank) {
+        if (cardImageToRankMap[card.currentSrc] === rank) {
             found = true;
             card.style.boxShadow = "0px 0px 10px 10px red";
             cardsFound++;
@@ -173,7 +224,7 @@ function p1GoFish() {
         cardsRemainingVal -= 1;
         updateCardsRemaining();
         let card = responseObject.cards[0];
-        imgImageToValueMap[card.image] = card.value;
+        cardImageToRankMap[card.image] = card.value;
         //map img src to card value
         updateInstructions(`You drew the card below`)
         placeHolder.style.backgroundImage = `url(${card.image})`;
@@ -199,7 +250,7 @@ function player2Turn() {
     //choose card
     let nodes = p2Hand.childNodes;
     let randomIdx = Math.floor(Math.random() * nodes.length);
-    let rank = imgImageToValueMap[nodes[randomIdx].currentSrc];
+    let rank = cardImageToRankMap[nodes[randomIdx].currentSrc];
     updateInstructions(`Player 2 asks for the following card rank: ${rank}`);
     let cardsFound = 0;
     continueBtn.rank = rank;
@@ -213,7 +264,7 @@ function checkP1Cards(event) {
     let cardsFound = 0;
     continueBtn.imgSrcs = [];
     nodes.forEach((card) => {
-        if (imgImageToValueMap[card.currentSrc] === rank) {
+        if (cardImageToRankMap[card.currentSrc] === rank) {
             found = true;
             card.style.boxShadow = "0px 0px 10px 10px red";
             cardsFound++;
@@ -241,7 +292,7 @@ function p2GoFish() {
         cardsRemainingVal -= 1;
         updateCardsRemaining();
         let card = responseObject.cards[0];
-        imgImageToValueMap[card.image] = card.value;
+        cardImageToRankMap[card.image] = card.value;
         updateInstructions(`Player 2 drew the card below`)
         placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
@@ -276,7 +327,7 @@ function chooseCardP1(event) {
         removeP2(event);
         checkForBooks(); //IMPORTANT
     }
-    updateP1(true);
+    highlightP1Cards(true);
 }
 
 function updateCardsP2(event) {
