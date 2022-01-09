@@ -3,20 +3,41 @@
     flex-direction: column;
     flex-basis: 100%;
     justify-content: space-between;
-}
-
-div {
     border-style: solid;
 }
 
+
+#continue-btn {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: none;
+    font-size: 16px;
+    margin: auto;
+    cursor: pointer;
+    padding: 12px 28px;
+    display:none;
+}
 .row {
     display: flex;
     flex-direction: row;
+    
 }
 
 .column {
+    border-style: solid;
     width: 33.125%;
 }
+.mid-column {
+    display:flex;
+    flex-direction:column;
+    width: 33.125%;
+    border-style: solid;
+    align-content:space-around;
+}
+
 
 #deck {
     display: block;
@@ -31,4 +52,5 @@ div {
 .place-holder {
     height: 314px;
     width: 226px;
+    margin: auto;
 }
