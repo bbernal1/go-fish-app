@@ -13,12 +13,12 @@
     color: white;
     text-align: center;
     text-decoration: none;
-    display: none;
+    visibility:hidden;
     font-size: 16px;
     margin: auto;
     cursor: pointer;
     padding: 12px 28px;
-    display:none;
+
 }
 .row {
     display: flex;
@@ -35,7 +35,7 @@
     flex-direction:column;
     width: 33.125%;
     border-style: solid;
-    align-content:space-around;
+
 }
 
 

@@ -75,7 +75,7 @@ function dealCards() {
             instructions.textContent = "";
             updateP1CardCnt();
             updateP2CardCnt();
-            continueBtn.style.display = "block";
+            continueBtn.style.visibility = "visible";
             continueBtn.style.boxShadow = "0px 0px 10px 10px blue";
             continueBtn.highlightP1CardsParam = true;
             continueBtn.addEventListener("click", p1ChooseCard)
@@ -87,9 +87,9 @@ function p1ChooseCard(event) {
     continueBtn.removeEventListener("click", p1ChooseCard);
     let turnOn = event.currentTarget.highlightP1CardsParam;
     continueBtn.removeEventListener("click", p1ChooseCard)
-    continueBtn.style.display = "none";
+    continueBtn.style.visibility = "hidden";
     instructions2.textContent = "";
-    instructions.textContent = "Choose a card rank to ask for";
+    instructions.textContent = "Choose a card rank";
     highlightP1Cards(true);
 }
 
@@ -97,13 +97,13 @@ function highlightP1Cards(turnOn) {
     let nodes = p1Hand.childNodes;
     if (turnOn === true) {
         nodes.forEach((card) => {
-            card.style = " margin-right:30px; margin-bottom:30px; box-shadow: 0px 0px 5px 5px blue;";
+            card.style.boxShadow = "0px 0px 5px 5px blue";
             card.style.cursor = "pointer";
             card.addEventListener("click", checkP2Cards);
         })
     } else {
         nodes.forEach((card) => {
-            card.style = " margin-right:30px; margin-bottom:30px; box-shadow: none;";
+            card.style.boxShadow = "none";
             card.style.cursor = "default";
             card.removeEventListener("click", checkP2Cards);
         })
@@ -112,10 +112,8 @@ function highlightP1Cards(turnOn) {
 
 
 
-
 function checkP2Cards() {
     highlightP1Cards(false);
-
     let rank = cardImageToRankMap[this.currentSrc];
     found = false;
     let nodes = p2Hand.childNodes;
@@ -182,7 +180,7 @@ function showBooksP1(bookRanks) {
         p1Score.textContent = `Score: ${p1ScoreVal}`;
         updateInstructions(`Player 1 has scored a book. `);
     }
-    
+
 
     continueBtn.addEventListener("click", updateP2CardCnt);
 }
@@ -203,7 +201,7 @@ function updateP1CardCnt(player) {
         showBooksP1(bookRanks);
     } else {
 
-        updateInstructions(`Player 1 has no books`)
+        updateInstructions(`Player 1 has no books in hand.`)
 
         continueBtn.addEventListener("click", updateP2CardCnt);
     }
@@ -249,7 +247,7 @@ function updateP2CardCnt() {
     if (bookRanks.length != 0) {
         showBooksP2(bookRanks);
     } else {
-        instructions2.textContent = `Player 2 has no books.`;
+        instructions2.textContent = `Player 2 has no books in hand.`;
     }
 }
 
@@ -272,7 +270,7 @@ function checkP1Cards(event) {
     let cardsFound = 0;
     cardsToTransfer = []
     nodes.forEach((card) => {
-        let currCardRank = cardImageToRankMap[card.currentSrc] 
+        let currCardRank = cardImageToRankMap[card.currentSrc]
         if (currCardRank === rank) {
             found = true;
             cardsToTransfer.push(card);
@@ -293,6 +291,7 @@ function checkP1Cards(event) {
         continueBtn.addEventListener("click", p2GoFish);
     }
 }
+
 function transferCardsP2(event) {
 
     continueBtn.removeEventListener("click", transferCardsP2);
@@ -360,83 +359,12 @@ function p1GoFish() {
             p1Hand.appendChild(img);
             p1CardCnt[card.value]++;
             updateP1CardCnt();
-            continueBtn.addEventListener("click",tempfunc = ()=>{
-                continueBtn.removeEventListener("click",tempfunc);
+            continueBtn.addEventListener("click", tempfunc = () => {
+                continueBtn.removeEventListener("click", tempfunc);
                 updateInstructions(`It is now player 2's turn`);
                 continueBtn.addEventListener("click", player2Turn);
             });
-            
+
         });
     });
 }
-
-
-
-
-
-// function chooseCardP1(event) {
-//     continueBtn.removeEventListener("click", chooseCardP1);
-//     instructions.textContent = "Choose a card rank to ask for";
-//     continueBtn.style.boxShadow = "none";
-//     placeHolder.style.backgroundImage = `none`;
-//     continueBtn.style.display = "none";
-//     let mode = event.currentTarget.mode;
-//     if (mode == true) {
-//         updateP1CardCnt();
-//         updateP2CardCnt();
-//         addP1(event)
-//         removeP2(event);
-//         checkForBooks(); //IMPORTANT
-//     }
-//     p1ChooseCard(true);
-// }
-
-// function updateCardsP2(event) {
-//     let imgSrcs = event.currentTarget.imgSrcs;
-//     imgSrcs.forEach((imgSrc) => {
-//         let img = document.createElement('img');
-//         img.setAttribute('src', imgSrc);
-//         img.style.marginBottom = "30px";
-//         p2Hand.appendChild(img);
-//     });
-
-//     let nodes = p1Hand.childNodes;
-//     let nodesCpy = [];
-//     nodes.forEach((node) => nodesCpy.push(node));
-//     nodesCpy.forEach((card) => {
-//         if (imgSrcs.includes(card.currentSrc)) {
-//             p1Hand.removeChild(card);
-//         }
-//     })
-//     continueBtn.removeEventListener("click", updateCardsP2);
-//     updateP1CardCnt();
-//     updateP2CardCnt();
-//     player2Turn();
-// }
-
-
-
-// function addP1(event) {
-//     let imgSrcs = event.currentTarget.imgSrcs;
-//     imgSrcs.forEach((imgSrc) => {
-//         let img = document.createElement('img');
-//         img.setAttribute('src', imgSrc);
-//         img.style.marginBottom = "30px";
-//         p1Hand.appendChild(img);
-//     })
-// }
-
-// function removeP2(event) {
-//     let imgSrcs = event.currentTarget.imgSrcs;
-//     let nodes = p2Hand.childNodes;
-//     let nodesCpy = [];
-//     nodes.forEach((node) => nodesCpy.push(node));
-//     nodesCpy.forEach((card) => {
-//         if (imgSrcs.includes(card.currentSrc)) {
-//             p2Hand.removeChild(card);
-//         }
-//     })
-
-// }
-
-init();
