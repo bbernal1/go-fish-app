@@ -95,7 +95,7 @@ function dealCards() {
                 }
                 i++;
             })
-            cardsRemainingVal -= 14;
+            cardsRemainingVal -= 7;
             updateCardsRemaining();
             updateScoreBoard()
                 // instructions.textContent = "";
@@ -123,7 +123,7 @@ function highlightP1Cards(turnOn) {
     if (nodes.length == 0) {
         p1DrawOneCard();
     }
-
+    console.log("here")
     if (turnOn === true) {
         nodes.forEach((card) => {
             card.style.boxShadow = "0px 0px 5px 5px blue";
@@ -148,8 +148,8 @@ function p1DrawOneCard() {
         updateInstructions(`You drew the card below`)
         placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
-        continueBtn.visibility="visible";
-        continueBtn.boxShadow="0px 0px 5px 5px blue";
+        continueBtn.style.visibility="visible";
+        continueBtn.style.boxShadow="0px 0px 5px 5px blue";
         continueBtn.addEventListener("click", tempfunc = () => {
             continueBtn.removeEventListener("click", tempfunc);
             placeHolder.style.backgroundImage = `none`;
@@ -160,7 +160,7 @@ function p1DrawOneCard() {
             p1Hand.appendChild(img);
             p1CardCnt[card.value]++;
             updateScoreBoard();
-            continueBtn.visibility="invisible";
+            continueBtn.style.visibility="hidden";
         });
     });
 }
@@ -402,6 +402,5 @@ function p2GoFish() {
         });
     });
 }
-
 
 init();
