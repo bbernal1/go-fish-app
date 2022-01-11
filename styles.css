@@ -64,10 +64,6 @@ body {
     width: 33.125%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between; 
-    align-content: space-between;
-    /* align-content: center; */
-    /* text-align: center; */
     margin:auto;
 }
 .score-count-column h1 {
