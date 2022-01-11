@@ -15,7 +15,7 @@ The application cannot detect when the game ends. The CSS needs to cleaned up. T
 https://bbernal1.github.io/go-fish-app/
 
 ### Installation Instructions
-Simply navigate to the website link above. An alternative way is to clone the repository and run the index.html file in a modern web browser.
+Simply click on the website link above. An alternate way is to clone the repository and run the index.html file in a modern web browser.
 
 ### Instructions on How to Play
 To start the game click on the card button and follow the instructions on screen. The game is played by using the mouse to click on the page and no keyboard inputs are necessary.The player with the higher score at the end of the game is the winner.
