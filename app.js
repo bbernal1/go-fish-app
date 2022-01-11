@@ -240,7 +240,7 @@ function p1TransferCards(event) {
     continueBtn.addEventListener("click", p1CheckForBooks);
 }
 
-let p1ScoreVal = 1;
+let p1ScoreVal = 0;
 
 function p1CheckForBooks(event) {
     let mode = event.currentTarget.mode;
