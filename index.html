@@ -5,15 +5,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Fish App</title>
+    <title>Go Fish Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <header>
-        <h1 style = "text-align:center">Go Fish App</h1>
+
     </header>
     <main class="container">
+        <div class="row">
+            <div class="column">
+                <h1 style="text-align:center">Player 1</h1>
+            </div>
+            <div class="column">
+                <h1 style="text-align:center">Go Fish Game</h1>
+            </div>
+            <div class="column">
+                <h1 style="text-align:center">Player 2</h1>
+            </div>
+        </div>
         <div class="row">
             <div id="p1-hand" class="column"></div>
             <div class="mid-column" style="text-align: center;">
@@ -23,20 +34,20 @@
                 <h1 id="instructions"></h1>
                 <h1 id="instructions-2"></h1>
                 <div id="place-holder" class="place-holder" style="margin:auto"></div>
-                
+
             </div>
             <div id="p2-hand" class="column " style="text-align:right"></div>
         </div>
         <div class="row">
             <div class="column">
-                <h1 id="p1-score">Score: 0</h1>
+                <h1 id="p1-score" style="text-align: center;">Score: 0</h1>
+            </div>
+            <div class="score-count-column">
+                <h1 id="p1-card-cnt"></h1>
+                <h1 id="p2-card-cnt"></h1>
             </div>
             <div class="column">
-                <p id="p1-card-cnt"></p>
-                <p id="p2-card-cnt"></p>
-            </div>
-            <div>
-                <h1 id="p2-score">Score: 0</h1>
+                <h1 id="p2-score" style="text-align: center;">Score: 0</h1>
             </div>
         </div>
 

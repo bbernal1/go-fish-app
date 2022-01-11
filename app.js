@@ -44,26 +44,19 @@ const p2CardCnt = { "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9":
 
 function updateScoreBoard() {
     let keys = Object.keys(p1CardCnt);
-    let str = "Player 1 Card Count: ";
+    let str = "<span>Player 1 Card Count</span><br>";
     //list of player 1's book ranks
-    let bookRanks = [];
     keys.forEach((key) => {
-        if (p1CardCnt[key] == 3) {
-            bookRanks.push(key);
-        }
-        str += key + " : " + p1CardCnt[key] + ", ";
+        str += key + " : " + p1CardCnt[key] + "<br>";
     })
-    p1CardCntP.textContent = str;
+    p1CardCntP.innerHTML = str;
     keys = Object.keys(p2CardCnt);
-    str = "Player 2 Card Count: ";
+    str = "<span>Player 2 Card Count</span><br>";
     bookRanks = [];
     keys.forEach((key) => {
-        if (p2CardCnt[key] == 3) {
-            bookRanks.push(key);
-        }
-        str += key + " : " + p2CardCnt[key] + ", ";
+        str += key + " : " + p2CardCnt[key] + "<br>";
     })
-    p2CardCntP.textContent = str;
+    p2CardCntP.innerHTML = str;
 }
 
 // this function triggers when clicking document.getElementById("deck");
@@ -99,13 +92,7 @@ function dealCards() {
             cardsRemainingVal -= amtToDraw;
             updateCardsRemaining();
             updateScoreBoard()
-                // instructions.textContent = "";
-                //updateP1CardCnt();
-                //updateP2CardCnt();
-                // continueBtn.style.visibility = "visible";
-                // continueBtn.style.boxShadow = "0px 0px 10px 10px blue";
-                // continueBtn.highlightP1CardsParam = true;
-                // continueBtn.addEventListener("click", p1ChooseCard)
+
             p1ChooseCard();
         });
 }
@@ -186,7 +173,7 @@ function highlightP1Cards(turnOn) {
             });
         } else {
             nodes.forEach((card) => {
-                card.style.boxShadow = "0px 0px 5px 5px blue";
+                card.style.boxShadow = "0px 0px 10px 10px darkblue";
                 card.style.cursor = "pointer";
                 instructions.textContent = "Choose a card to ask for";
                 card.addEventListener("click", p1CheckP2Cards);
@@ -205,7 +192,6 @@ function p1CheckP2Cards() {
 
     highlightP1Cards(false);
     continueBtn.style.visibility = "visible";
-    continueBtn.style.boxShadow = "0px 0px 10px 10px blue"
     let rank = cardImageToRankMap[this.currentSrc];
     found = false;
     let nodes = p2Hand.childNodes;
@@ -319,6 +305,7 @@ function p1GoFish() {
 }
 
 function p2ChooseCard() {
+    continueBtn.style.visibility="visible";
     continueBtn.removeEventListener("click", p2ChooseCard);
     if (p1Hand.childNodes.length == 0 && p2Hand.childNodes.length == 0) {
         if (cardsRemainingVal > 0) {
@@ -434,8 +421,6 @@ function p2TransferCards(event) {
         p2Hand.appendChild(card);
     });
     instructions.textContent = `Now checking for player 2 books.`
-        // updateP1CardCnt();
-        // updateP2CardCnt();
     continueBtn.mode = 0;
     continueBtn.addEventListener("click", p2CheckForBooks);
 }
@@ -485,7 +470,8 @@ function p2GoFish() {
         updateCardsRemaining();
         let card = responseObject.cards[0];
         cardImageToRankMap[card.image] = card.value;
-        updateInstructions(`Player 2 will draw 1 card`);
+        updateInstructions(`Player 2 drew the card below`);
+        placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
         continueBtn.addEventListener("click", tempfunc = () => {
             continueBtn.removeEventListener("click", tempfunc);
