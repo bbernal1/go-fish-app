@@ -7,7 +7,7 @@ const p2Hand = document.getElementById("p2-hand");
 const continueBtn = document.getElementById("continue-btn");
 const p1CardCntP = document.getElementById("p1-card-cnt");
 const p2CardCntP = document.getElementById("p2-card-cnt");
-const placeHolder = document.getElementById("place-holder");
+//const placeHolder = document.getElementById("place-holder");
 const p1Score = document.getElementById("p1-score");
 const p2Score = document.getElementById("p2-score");
 //this function updates document.getElementById("instructions");
@@ -72,17 +72,19 @@ function dealCards() {
             responseObject.cards.forEach((card) => {
                 //creates image element from card
                 let img = document.createElement('img');
-                img.setAttribute('src', card.image);
-
                 //maps the cardimage to the card value
-                cardImageToRankMap[card.image] = card.value;
-
                 //The if-else statement is used to deal a card to each player in an alternating fashion
                 if (i % 2 == 0) {
+                    img.url = card.image;
+                    img.setAttribute('src', img.url);
+                    cardImageToRankMap[img.url] = card.value;
                     img.style = "margin-right:30px; margin-bottom:30px;"
                     p1CardCnt[card.value] = p1CardCnt[card.value] + 1;
                     p1Hand.appendChild(img);
                 } else {
+                    img.url = card.image;
+                    img.setAttribute('src', "https://deckofcardsapi.com/static/img/back.png");
+                    cardImageToRankMap[img.url] = card.value;
                     img.style = " margin-left:30px;margin-bottom:30px;"
                     p2CardCnt[card.value] = p2CardCnt[card.value] + 1;
                     p2Hand.appendChild(img);
@@ -130,9 +132,10 @@ function highlightP1Cards(turnOn) {
                     updateCardsRemaining();
                     updateInstructions(`Player 2 drew ${drawAmt} card(s)`);
                     responseObject.cards.forEach((card) => {
+                        img.url = card.url
                         let img = document.createElement('img');
-                        cardImageToRankMap[card.image] = card.value;
-                        img.setAttribute('src', card.image);
+                        cardImageToRankMap[card.url] = card.value;
+                        img.setAttribute('src', "https://deckofcardsapi.com/static/img/back.png");
                         img.style.marginBottom = "30px";
                         img.style.marginLeft = "30px";
                         p2Hand.appendChild(img);
@@ -158,8 +161,9 @@ function highlightP1Cards(turnOn) {
                     updateInstructions(`Player 1 drew ${drawAmt} card(s)`);
                     responseObject.cards.forEach((card) => {
                         let img = document.createElement('img');
-                        cardImageToRankMap[card.image] = card.value;
-                        img.setAttribute('src', card.image);
+                        img.url = card.image;
+                        cardImageToRankMap[img.url] = card.value;
+                        img.setAttribute('src', img.url);
                         img.style.marginBottom = "30px";
                         img.style.marginRight = "30px";
                         p1Hand.appendChild(img);
@@ -192,16 +196,17 @@ function p1CheckP2Cards() {
 
     highlightP1Cards(false);
     continueBtn.style.visibility = "visible";
-    let rank = cardImageToRankMap[this.currentSrc];
+    let rank = cardImageToRankMap[this.url];
     found = false;
     let nodes = p2Hand.childNodes;
     let cardsFound = 0;
     cardsToTransfer = [];
     nodes.forEach((card) => {
-        if (cardImageToRankMap[card.currentSrc] === rank) {
+        if (cardImageToRankMap[card.url] === rank) {
             found = true;
-            cardsToTransfer.push(card);
+            card.setAttribute("src",card.url);
             card.style.boxShadow = "0px 0px 10px 10px red";
+            cardsToTransfer.push(card);
             cardsFound++;
         }
     });
@@ -224,7 +229,6 @@ function p1TransferCards(event) {
     continueBtn.removeEventListener("click", p1TransferCards);
     updateScoreBoard();
     let cardsToTransfer = event.currentTarget.cardsToTransfer;
-    let nodes = p2Hand.childNodes;
 
     cardsToTransfer.forEach((card) => {
         card.style.boxShadow = "none";
@@ -248,7 +252,7 @@ function p1CheckForBooks(event) {
     nodes.forEach((card) => nodesCpy.push(card));
     flag = false;
     nodesCpy.forEach((card) => {
-        let rank = cardImageToRankMap[card.getAttribute("src")];
+        let rank = cardImageToRankMap[card.url];
         if (p1CardCnt[rank] == 4) {
             flag = true;
             p1Hand.removeChild(card);
@@ -284,14 +288,14 @@ function p1GoFish() {
         updateCardsRemaining();
         let card = responseObject.cards[0];
         cardImageToRankMap[card.image] = card.value;
-        updateInstructions(`You drew the card below`)
-        placeHolder.style.backgroundImage = `url(${card.image})`;
+        updateInstructions(`Player 1 drew a ${card.value}`)
+        //placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
         continueBtn.addEventListener("click", tempfunc = () => {
             continueBtn.removeEventListener("click", tempfunc);
-            placeHolder.style.backgroundImage = `none`;
             let img = document.createElement('img');
-            img.setAttribute('src', card.image);
+            img.url = card.image;
+            img.setAttribute('src', img.url);
             img.style.marginBottom = "30px";
             img.style.marginRight = "30px";
             p1Hand.appendChild(img);
@@ -328,8 +332,9 @@ function p2ChooseCard() {
                 updateInstructions(`Player 1 drew ${drawAmt} card(s)`);
                 responseObject.cards.forEach((card) => {
                     let img = document.createElement('img');
-                    cardImageToRankMap[card.image] = card.value;
-                    img.setAttribute('src', card.image);
+                    img.url = card.image;
+                    cardImageToRankMap[img.url] = card.value;
+                    img.setAttribute('src', img.url);
                     img.style.marginBottom = "30px";
                     img.style.marginRight = "30px";
                     p1Hand.appendChild(img);
@@ -354,8 +359,9 @@ function p2ChooseCard() {
                 updateInstructions(`Player 2 drew ${drawAmt} card(s)`);
                 responseObject.cards.forEach((card) => {
                     let img = document.createElement('img');
-                    cardImageToRankMap[card.image] = card.value;
-                    img.setAttribute('src', card.image);
+                    img.url = card.image;
+                    cardImageToRankMap[img.url] = card.value;
+                    img.setAttribute('src', "https://deckofcardsapi.com/static/img/back.png");
                     img.style.marginBottom = "30px";
                     img.style.marginLeft = "30px";
                     p2Hand.appendChild(img);
@@ -370,7 +376,7 @@ function p2ChooseCard() {
     } else {
         let nodes = p2Hand.childNodes;
         let randomIdx = Math.floor(Math.random() * nodes.length);
-        let rank = cardImageToRankMap[nodes[randomIdx].currentSrc];
+        let rank = cardImageToRankMap[nodes[randomIdx].url];
         updateInstructions(`Player 2 asks for a ${rank}`);
         continueBtn.rank = rank;
         continueBtn.addEventListener("click", p2CheckP1Cards)
@@ -385,7 +391,7 @@ function p2CheckP1Cards(event) {
     let cardsFound = 0;
     cardsToTransfer = []
     nodes.forEach((card) => {
-        let currCardRank = cardImageToRankMap[card.currentSrc]
+        let currCardRank = cardImageToRankMap[card.url]
         if (currCardRank === rank) {
             found = true;
             cardsToTransfer.push(card);
@@ -411,11 +417,10 @@ function p2TransferCards(event) {
     continueBtn.removeEventListener("click", p2TransferCards);
     updateScoreBoard();
     let cardsToTransfer = event.currentTarget.cardsToTransfer;
-    let nodes = p2Hand.childNodes;
     cardsToTransfer.forEach((card) => {
         card.style.boxShadow = "none";
-
         p1Hand.removeChild(card);
+        card.setAttribute("src","https://deckofcardsapi.com/static/img/back.png");
         card.style.marginRight = "0px";
         card.style.marginLeft = "30px"
         p2Hand.appendChild(card);
@@ -435,7 +440,7 @@ function p2CheckForBooks(event) {
     nodes.forEach((card) => nodesCpy.push(card));
     flag = false;
     nodesCpy.forEach((card) => {
-        let rank = cardImageToRankMap[card.getAttribute("src")];
+        let rank = cardImageToRankMap[card.url];
         if (p2CardCnt[rank] == 4) {
             flag = true;
             p2Hand.removeChild(card);
@@ -470,14 +475,16 @@ function p2GoFish() {
         updateCardsRemaining();
         let card = responseObject.cards[0];
         cardImageToRankMap[card.image] = card.value;
-        updateInstructions(`Player 2 drew the card below`);
-        placeHolder.style.backgroundImage = `url(${card.image})`;
+        updateInstructions(`Player 2 drew a ${card.value}`);
+        //placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
         continueBtn.addEventListener("click", tempfunc = () => {
             continueBtn.removeEventListener("click", tempfunc);
-            placeHolder.style.backgroundImage = `none`;
+            //placeHolder.style.backgroundImage = `none`;
+            
             let img = document.createElement('img');
-            img.setAttribute('src', card.image);
+            img.url = card.image;
+            img.setAttribute('src', "https://deckofcardsapi.com/static/img/back.png");
             img.style.marginBottom = "30px";
             img.style.marginLeft = "30px";
             p2Hand.appendChild(img);

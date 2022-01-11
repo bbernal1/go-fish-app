@@ -56,17 +56,22 @@ body {
     width: 33.125%;
     border-color: black;
     border-style: solid;
+    text-align: center;
 }
 
 .score-count-column {
     width: 33.125%;
-    border-color: black;
-    border-style: solid;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between; 
+    align-content: space-between;
+    /* align-content: center; */
+    /* text-align: center; */
+    margin:auto;
 }
-
+.score-count-column h1 {
+    width:170px;
+}
 #deck {
     display: block;
     margin: auto;
