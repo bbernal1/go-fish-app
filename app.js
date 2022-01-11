@@ -130,7 +130,7 @@ function highlightP1Cards(turnOn) {
                 fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${drawAmt}`).then(response => response.json()).then((responseObject) => {
                     cardsRemainingVal -= drawAmt;
                     updateCardsRemaining();
-                    updateInstructions(`Player 2 drew ${drawAmt} card(s)`);
+                    updateInstructions(`Player 2 draws ${drawAmt} card(s)`);
                     responseObject.cards.forEach((card) => {
                         img.url = card.url
                         let img = document.createElement('img');
@@ -158,7 +158,7 @@ function highlightP1Cards(turnOn) {
                 fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${drawAmt}`).then(response => response.json()).then((responseObject) => {
                     cardsRemainingVal -= drawAmt;
                     updateCardsRemaining();
-                    updateInstructions(`Player 1 drew ${drawAmt} card(s)`);
+                    updateInstructions(`Player 1 draws ${drawAmt} card(s)`);
                     responseObject.cards.forEach((card) => {
                         let img = document.createElement('img');
                         img.url = card.image;
@@ -179,7 +179,7 @@ function highlightP1Cards(turnOn) {
             nodes.forEach((card) => {
                 card.style.boxShadow = "0px 0px 10px 10px darkblue";
                 card.style.cursor = "pointer";
-                instructions.textContent = "Choose a card to ask for";
+                instructions.textContent = "Choose a rank to ask for.";
                 card.addEventListener("click", p1CheckP2Cards);
             });
         }
@@ -265,16 +265,16 @@ function p1CheckForBooks(event) {
 
     if (mode == 0) {
         if (flag == true) {
-            updateInstructions(`Player 1 has scored one book.`);
+            updateInstructions(`Player 1 scores one book.`);
         } else {
-            updateInstructions(`Player 1 has scored no books.`);
+            updateInstructions(`Player 1 scores no books.`);
         }
         continueBtn.addEventListener("click", p1ChooseCard);
     } else if (mode == 1) {
         if (flag == true) {
-            updateInstructions(`Player 1 has scored one book.`);
+            updateInstructions(`Player 1 scores one book.`);
         } else {
-            updateInstructions(`Player 1 has scored no books.\n It is now player 2's turn.`);
+            updateInstructions(`Player 1 scores no books.\n It is now player 2's turn.`);
         }
         continueBtn.addEventListener("click", p2ChooseCard);
     }
@@ -288,7 +288,7 @@ function p1GoFish() {
         updateCardsRemaining();
         let card = responseObject.cards[0];
         cardImageToRankMap[card.image] = card.value;
-        updateInstructions(`Player 1 drew a ${card.value}`)
+        updateInstructions(`Player 1 draws a ${card.value}`)
         //placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
         continueBtn.addEventListener("click", tempfunc = () => {
@@ -329,7 +329,7 @@ function p2ChooseCard() {
             fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${drawAmt}`).then(response => response.json()).then((responseObject) => {
                 cardsRemainingVal -= drawAmt;
                 updateCardsRemaining();
-                updateInstructions(`Player 1 drew ${drawAmt} card(s)`);
+                updateInstructions(`Player 1 draws ${drawAmt} card(s)`);
                 responseObject.cards.forEach((card) => {
                     let img = document.createElement('img');
                     img.url = card.image;
@@ -356,7 +356,7 @@ function p2ChooseCard() {
             fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${drawAmt}`).then(response => response.json()).then((responseObject) => {
                 cardsRemainingVal -= drawAmt;
                 updateCardsRemaining();
-                updateInstructions(`Player 2 drew ${drawAmt} card(s)`);
+                updateInstructions(`Player 2 draws ${drawAmt} card(s)`);
                 responseObject.cards.forEach((card) => {
                     let img = document.createElement('img');
                     img.url = card.image;
@@ -453,16 +453,16 @@ function p2CheckForBooks(event) {
     }
     if (mode == 0) {
         if (flag == true) {
-            updateInstructions(`Player 2 has scored one book.`);
+            updateInstructions(`Player 2 scores one book.`);
         } else {
-            updateInstructions(`Player 2 has scored no books.`);
+            updateInstructions(`Player 2 scores no books.`);
         }
         continueBtn.addEventListener("click", p2ChooseCard);
     } else if (mode == 1) {
         if (flag == true) {
-            updateInstructions(`Player 2 has scored one book.`);
+            updateInstructions(`Player 2 scores one book.`);
         } else {
-            updateInstructions(`Player 2 has scored no books.\n It is now player 1's turn.`);
+            updateInstructions(`Player 2 scores no books.\n It is now player 1's turn.`);
         }
         continueBtn.addEventListener("click", p1ChooseCard);
     }
@@ -475,7 +475,7 @@ function p2GoFish() {
         updateCardsRemaining();
         let card = responseObject.cards[0];
         cardImageToRankMap[card.image] = card.value;
-        updateInstructions(`Player 2 drew a ${card.value}`);
+        updateInstructions(`Player 2 draws a ${card.value}`);
         //placeHolder.style.backgroundImage = `url(${card.image})`;
         let tempfunc;
         continueBtn.addEventListener("click", tempfunc = () => {
